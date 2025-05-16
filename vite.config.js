@@ -11,7 +11,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  // bas//e: "/Project-MCA/",
+  base: "/",
   plugins: [react()],
   resolve: {
     alias: {
