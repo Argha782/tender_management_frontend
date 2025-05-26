@@ -105,12 +105,12 @@ const Tenders = () => {
       return false;
     }
 
-    if (
-      new Date(newTender.tenderEndDate) < new Date(newTender.tenderOpeningDate)
-    ) {
-      alert("End date cannot be before opening date.");
-      return false;
-    }
+    // if (
+    //    new Date(newTender.tenderOpeningDate) < new Date(newTender.tenderEndDate)
+    // ) {
+    //   alert("End date cannot be before opening date.");
+    //   return false;
+    // }
 
     return true;
   };

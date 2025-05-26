@@ -2,6 +2,7 @@ import API from "../services/api";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiEye, FiEdit, FiTrash } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 const MyTenders = () => {
   const navigate = useNavigate();
@@ -114,12 +115,12 @@ const MyTenders = () => {
       return false;
     }
 
-    if (
-      new Date(newTender.tenderEndDate) < new Date(newTender.tenderOpeningDate)
-    ) {
-      alert("End date cannot be before opening date.");
-      return false;
-    }
+    // if (
+    //    new Date(newTender.tenderOpeningDate)< new Date(newTender.tenderEndDate)
+    // ) {
+    //   alert("End date cannot be before opening date.");
+    //   return false;
+    // }
 
     return true;
   };
@@ -156,7 +157,7 @@ const MyTenders = () => {
       resetForm();
     } catch (err) {
       console.error("Error adding tender", err);
-      alert("Failed to add tender");
+      toast.error("Failed to add tender");
     }
   };
 
@@ -219,7 +220,7 @@ const MyTenders = () => {
       setDocumentFile([]);
     } catch (err) {
       console.error("Error updating tender", err);
-      alert("Failed to update tender");
+      toast.error("Failed to update tender");
     }
   };
 
@@ -245,12 +246,12 @@ const MyTenders = () => {
     try {
       // New DELETE request to backend
       await API.delete(`/tenders/${_id}`);
-      alert("Tender deleted.");
+      toast.success("Tender deleted.");
       // Update local state after successful deletion
       setTenders(tenders.filter((tender) => tender._id !== _id));
     } catch (err) {
       console.error("Error deleting tender", err);
-      alert("Failed to delete tender");
+      toast.error("Failed to delete tender");
     }
   };
 

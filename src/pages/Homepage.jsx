@@ -1,0 +1,173 @@
+import React, { useEffect, useState } from "react";
+import { FaDownload } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import DataTable from "react-data-table-component";
+import API from "../services/api";
+
+const Home = () => {
+  const [tenders, setTenders] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  useEffect(() => {
+    const fetchTenders = async () => {
+      try {
+        // const res = await API.get("/");
+        const res = await API.get("/tenders");
+        console.log("Fetched tenders:", res.data);
+        setTenders(res.data.data); // Make sure this is an array
+      } catch (err) {
+        console.error("Failed to fetch tenders", err);
+      }
+    };
+    fetchTenders();
+  }, []);
+
+  // Filter tenders based on search input
+  const filteredTenders = tenders.filter((tender) => {
+    if (!tender || !tender.tenderDetails) return false;
+    try {
+      return (
+        String(tender.tenderDetails)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        String(tender.tenderNo).toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    } catch (err) {
+      console.error("Error filtering tender:", err, tender);
+      return false;
+    }
+  });
+
+  const columns = [
+    {
+      name: "Tender No",
+      selector: (row) => row.tenderNo,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Work Details",
+      selector: (row) => row.tenderDetails,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Department",
+      selector: (row) => row.department || "N/A",
+      sortable: true,
+    },
+    {
+      name: " Submission Start Date",
+      selector: (row) => new Date(row.submissionStartDate).toLocaleDateString(),
+      sortable: true,
+    },
+    {
+      name: "Tender End Date",
+      selector: (row) => new Date(row.tenderEndDate).toLocaleDateString(),
+      sortable: true,
+    },
+    {
+      name: "Status",
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded text-xs font-semibold ${
+            row.status === "Open"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+      sortable: true,
+    },
+    {
+      name: "Download",
+      cell: (row) =>
+        row.documents && row.documents.length > 0 ? (
+          <div className="flex flex-col gap-1">
+            {row.documents.map((doc, index) => {
+                const fileName =
+                  doc.title ||
+                  (doc.url
+                    ? decodeURIComponent(doc.url.split("/").pop().split("?")[0])
+                    : "Unknown Document");
+                return (
+                  <li key={index} className="flex items-center gap-2">
+                    <FaDownload className="text-sm" />
+                    <a
+                      href={doc.url || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline break-words"
+                    >
+                      {fileName}
+                    </a>
+                  </li>
+                );
+              })}
+
+            {/* {row.documents.map((doc, index) => (
+              <a
+                key={index}
+                href={doc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-blue-600 hover:underline"
+              >
+                <FaDownload className="text-sm" />
+                {doc.name || `Document ${index + 1}`}
+              </a>
+            ))} */}
+          </div>
+        ) : (
+          "N/A"
+        ),
+      grow: 2,
+      wrap: true,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Navbar */}
+      <nav className="bg-blue-900 text-white shadow p-4 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <img src="AEGCL_logo.jpg" alt="AEGCL Logo" className="h-10" />
+          <h1 className="text-xl font-semibold">AEGCL Tender Portal</h1>
+        </div>
+        <Link to="/login">
+          <button className="bg-white text-blue-900 px-4 py-2 rounded-md font-semibold hover:bg-gray-200 transition">
+            Register / Login
+          </button>
+        </Link>
+      </nav>
+
+      {/* Table Section */}
+      <div className="max-w-7xl mx-auto p-4">
+        <div className="mb-4 flex justify-between items-center">
+          <h2 className="text-2xl font-bold">All Tenders</h2>
+          <input
+            type="text"
+            placeholder="Search by Tender No or Details"
+            className="border p-2 rounded w-72"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <DataTable
+          columns={columns}
+          data={filteredTenders}
+          pagination
+          highlightOnHover
+          responsive
+          striped
+          defaultSortField="startDate"
+          persistTableHead
+          noDataComponent="No tenders available"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default Home;

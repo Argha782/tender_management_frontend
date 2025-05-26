@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // backend running here
-  withCredentials: true,
+  baseURL: "http://localhost:5000/api",
+  // withCredentials: true, // Only needed if using cookies
 });
 
 API.interceptors.request.use((config) => {
@@ -13,21 +13,20 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Add response interceptor to handle token expiration
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response?.status === 401) {
       alert("Session expired, please login again.");
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("token");
       window.location.href = "/login";
+    } else if (!error.response) {
+      alert("Server is not responding. Please try again later.");
     }
     return Promise.reject(error);
   }
 );
 
 export default API;
-
-   

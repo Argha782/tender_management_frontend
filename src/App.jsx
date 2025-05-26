@@ -1,38 +1,64 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Toaster } from "react-hot-toast";
+import { useState, useEffect, useContext } from "react";
+import { Context, ContextProvider } from "./context.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+// import PublicTenders from "./pages/PublicTenders.jsx";
+import Login from "./components/Login";
+import Register from "./components/Register";
 import Dashboard from "./pages/Dashboard";
+import OtpVerification from "./pages/OTPverification.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 import Tenders from "./pages/Tenders";
 import MyTenders from "./pages/MyTender.jsx";
 import TenderDetails from "./pages/TenderDetails";
 import Users from "./pages/User.jsx";
 import MyProfile from "./pages/MyProfile.jsx";
+import Notifications from "./pages/Notification";
 
 import Unauthorized from "./components/Unauthorized";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import TenderOwnerSidebar from "./components/TenderOwnerSidebar"; // Import your Tender Owner Sidebar
 import PrivateRoute from "./components/PrivateRoute";
+import Home from "./pages/Homepage.jsx";
 
 
 const Layout = ({ children }) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState(null);
+  const { isAuthenticated, user } = useContext(Context);
+  const role = user?.role;
 
   const location = useLocation();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user")); // assumes user object stored here
-    setIsAuthenticated(!!token);
-    setRole(user?.role || null);
-  }, [location]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const user = JSON.parse(localStorage.getItem("user")); // assumes user object stored here
+  //   setIsAuthenticated(!!token);
+  //   setRole(user?.role || null);
+  // }, [location]);
 
-  const hideLayout = location.pathname === "/login" || location.pathname === "/register";
+  const path = location.pathname;
+  
+
+  // const hideLayout =
+  //   path === "/login" ||
+  //   path === "/password/forgot" ||
+  //   path === "/password/reset/:token" ||
+  //   path === "/otp-verification/:email/:phoneNumber" ||
+  //   path === "/register";
+    // path === "/"; //  Exclude layout on Public Tenders page
+
+     const hideLayout =
+    path === "/" ||
+    path === "/login" ||
+    path === "/password/forgot" ||
+    path.startsWith("/password/reset/") ||
+    path.startsWith("/otp-verification/") ||
+    path === "/register";
+    
 
   const renderSidebar = () => {
     if (role === "superadmin") return <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />;
@@ -60,17 +86,27 @@ const App = () => {
   return (
     <Router>
       <Layout>
-        <Toaster />
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          {/* <Route path="/" element={<div>Hello World</div>} /> */}
+          {/* <Route path="/" element={<Navigate to="/dashboard" />} /> */}
+          <Route path="/" element={<Home/>} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/otp-verification/:email/:phoneNumber"
+            element={<OtpVerification />}
+          />
+          <Route path="/password/forgot" element={<ForgotPassword />} />
+          <Route path="/password/reset/:token" element={<ResetPassword />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="*" element={<div>Fallback: Page not found or crashed</div>} />
+
 
           {/* Protected Routes */}
           <Route element={<PrivateRoute allowedRoles={["superadmin", "tenderowner", "vendor"]} />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             <Route path="/tenders/:_id" element={<TenderDetails />} />
             <Route path="/profile" element={<MyProfile />} />
           </Route>
@@ -84,9 +120,10 @@ const App = () => {
             <Route path="/my-tenders" element={<MyTenders/>} />
           </Route>
 
-          <Route path="/notifications" element={<h1>Notifications</h1>} />
+          <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </Layout>
+      <ToastContainer theme="colored" />
     </Router>
   );
 };
