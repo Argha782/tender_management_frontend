@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  // baseURL: "http://localhost:5000/api",
-  baseURL: "https://tender-management-backend.onrender.com/api", 
+  baseURL: "http://localhost:5000/api",
+  // baseURL: "https://tender-management-backend.onrender.com/api", 
   // withCredentials: true, // Only needed if using cookies
 });
 

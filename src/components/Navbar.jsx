@@ -20,8 +20,12 @@ const Navbar = () => {
 
   return (
 <nav className="sticky top-0 w-full z-50 bg-blue-900 border-b p-4 shadow flex justify-between items-center h-16">
-      <div className="text-xl font-bold text-white">ASSAM ELECTRICITY GRID CORPORATION</div>
-
+      <div className="text-xl font-bold text-white cursor-pointer" onClick={() => navigate("/")}>
+        ASSAM ELECTRICITY GRID CORPORATION
+      </div>
+      <div className="text-lg font-semibold text-white cursor-pointer hover:underline" onClick={() => navigate("/")}>
+            Home
+      </div>
       {isAuthenticated && (
         <div className="relative">
           <UserCircle2
@@ -51,7 +55,7 @@ const Navbar = () => {
               </li>
             </ul>
           </div>
-          )}
+          )} 
         </div>
       )}
     </nav>

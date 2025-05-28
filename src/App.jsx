@@ -57,8 +57,8 @@ const Layout = ({ children }) => {
     path === "/password/forgot" ||
     path.startsWith("/password/reset/") ||
     path.startsWith("/otp-verification/") ||
-    path === "/register";
-    
+    path === "/register" ||
+    path.startsWith("/tenders/");
 
   const renderSidebar = () => {
     if (role === "superadmin") return <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />;
@@ -89,8 +89,8 @@ const App = () => {
         <Routes>
           {/* Public Routes */}
           {/* <Route path="/" element={<div>Hello World</div>} /> */}
-          {/* <Route path="/" element={<Navigate to="/dashboard" />} /> */}
           <Route path="/" element={<Home/>} />
+          <Route path="/tenders/:_id" element={<TenderDetails />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -107,7 +107,6 @@ const App = () => {
           {/* Protected Routes */}
           <Route element={<PrivateRoute allowedRoles={["superadmin", "tenderowner", "vendor"]} />}>
             {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-            <Route path="/tenders/:_id" element={<TenderDetails />} />
             <Route path="/profile" element={<MyProfile />} />
           </Route>
 

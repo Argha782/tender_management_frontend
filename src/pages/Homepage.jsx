@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { FaDownload } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import API from "../services/api";
+import { UserCircle2, LogOut } from "lucide-react";
+import { Context } from "../context.jsx";
 
 const Home = () => {
   const [tenders, setTenders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, setUser } = useContext(Context);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchTenders = async () => {
       try {
@@ -43,18 +49,28 @@ const Home = () => {
       selector: (row) => row.tenderNo,
       sortable: true,
       wrap: true,
+      width: "180px",
+      cell: (row) => (
+    <Link
+      to={`/tenders/${row._id}`}
+      className="text-blue-600 hover:underline"
+    >
+      {row.tenderNo}
+    </Link>
+  ),
     },
     {
-      name: "Work Details",
+      name: "Tender Details",
       selector: (row) => row.tenderDetails,
       sortable: true,
       wrap: true,
+      width: "250px",
     },
-    {
-      name: "Department",
-      selector: (row) => row.department || "N/A",
-      sortable: true,
-    },
+    // {
+    //   name: "Department",
+    //   selector: (row) => row.department || "N/A",
+    //   sortable: true,
+    // },
     {
       name: " Submission Start Date",
       selector: (row) => new Date(row.submissionStartDate).toLocaleDateString(),
@@ -86,25 +102,25 @@ const Home = () => {
         row.documents && row.documents.length > 0 ? (
           <div className="flex flex-col gap-1">
             {row.documents.map((doc, index) => {
-                const fileName =
-                  doc.title ||
-                  (doc.url
-                    ? decodeURIComponent(doc.url.split("/").pop().split("?")[0])
-                    : "Unknown Document");
-                return (
-                  <li key={index} className="flex items-center gap-2">
-                    <FaDownload className="text-sm" />
-                    <a
-                      href={doc.url || "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline break-words"
-                    >
-                      {fileName}
-                    </a>
-                  </li>
-                );
-              })}
+              const fileName =
+                doc.title ||
+                (doc.url
+                  ? decodeURIComponent(doc.url.split("/").pop().split("?")[0])
+                  : "Unknown Document");
+              return (
+                <li key={index} className="flex items-center gap-2">
+                  <FaDownload className="text-sm" />
+                  <a
+                    href={doc.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline break-words"
+                  >
+                    {fileName}
+                  </a>
+                </li>
+              );
+            })}
 
             {/* {row.documents.map((doc, index) => (
               <a
@@ -122,7 +138,7 @@ const Home = () => {
         ) : (
           "N/A"
         ),
-      grow: 2,
+      // grow: 2,
       wrap: true,
     },
   ];
@@ -135,11 +151,45 @@ const Home = () => {
           <img src="AEGCL_logo.jpg" alt="AEGCL Logo" className="h-10" />
           <h1 className="text-xl font-semibold">AEGCL Tender Portal</h1>
         </div>
-        <Link to="/login">
-          <button className="bg-white text-blue-900 px-4 py-2 rounded-md font-semibold hover:bg-gray-200 transition">
-            Register / Login
-          </button>
-        </Link>
+
+        {user && user.role === "vendor" ? (
+          <div className="relative">
+            <UserCircle2
+              className="w-12 h-12 cursor-pointer text-white"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            />
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg z-50">
+                <ul className="py-1 text-xl">
+                  <li
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      navigate("/profile");
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    My Profile
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center px-4 py-2 text-red-600 hover:bg-gray-100 w-full"
+                    >
+                      <LogOut className="w-6 h-6 mr-2" />
+                      Log Out
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link to="/login">
+            <button className="bg-white text-blue-900 px-4 py-2 rounded-md font-semibold hover:bg-gray-200 transition">
+              Register / Login
+            </button>
+          </Link>
+        )}
       </nav>
 
       {/* Table Section */}
