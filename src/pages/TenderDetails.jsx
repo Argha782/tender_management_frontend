@@ -203,6 +203,7 @@
 
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Heart } from "lucide-react";
 import API from "../services/api";
 
 const formatDate = (date) =>
@@ -211,11 +212,24 @@ const formatDate = (date) =>
 const TenderDetails = () => {
   const { _id } = useParams();
   const [tender, setTender] = useState(null);
+  const [isFavourite, setIsFavourite] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role || null;
+
+  const handleFavouriteToggle = () => {
+    const favourites = JSON.parse(localStorage.getItem("favourites")) || [];
+    if (isFavourite) {
+      const updated = favourites.filter((fav) => fav !== _id);
+      localStorage.setItem("favourites", JSON.stringify(updated));
+    } else {
+      favourites.push(_id);
+      localStorage.setItem("favourites", JSON.stringify([...new Set(favourites)]));
+    }
+    setIsFavourite(!isFavourite);
+  };
 
   useEffect(() => {
     const fetchTender = async () => {
@@ -236,6 +250,11 @@ const TenderDetails = () => {
     };
 
     fetchTender();
+  }, [_id]);
+  
+  useEffect(() => {
+    const favourites = JSON.parse(localStorage.getItem("favourites")) || [];
+    setIsFavourite(favourites.includes(_id));
   }, [_id]);
 
   if (loading) {
@@ -271,19 +290,29 @@ const TenderDetails = () => {
           >
             🏠 Home
           </Link>
-          {user && (role === "superadmin" || role === "tenderowner") && (
+          {role === "superadmin" || role === "tenderowner" ? (
             <Link
               to={role === "tenderowner" ? "/my-tenders" : "/tenders"}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded"
             >
-              🔙 Back to Tenders List
+              Back to Tenders List
             </Link>
-          )}
-          {user && (role === "vendor") && (  
-            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded text-sm">
-              🔔 Notify Me
+          ) : user ? (
+            <button
+              onClick={handleFavouriteToggle}
+              className={`flex items-center gap-2 px-5 py-2 rounded ${
+                isFavourite
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-gray-300 hover:bg-gray-400"
+              } text-white`}
+            >
+              <Heart
+                fill={isFavourite ? "white" : "none"}
+                className="w-5 h-5"
+              />
+              Favourite
             </button>
-          )}
+          ) : null}
         </div>
         <a
           href="https://assamtenders.gov.in/nicgep/app"
@@ -309,23 +338,48 @@ const TenderDetails = () => {
           <Info label="Tender Details" value={tender?.tenderDetails} />
           <Info label="Status" value={tender?.status} />
           <Info label="Publish Date" value={formatDate(tender?.publishDate)} />
-          <Info label="Submission Start Date" value={formatDate(tender?.submissionStartDate)} />
-          <Info label="Tender End Date" value={formatDate(tender?.tenderEndDate)} />
-          <Info label="Tender Opening Date" value={formatDate(tender?.tenderOpeningDate)} />
-          <Info label="Pre-Bid Meeting Date" value={formatDate(tender?.preBidMeetingDate)} />
-          <Info label="Price Bid Opening Date" value={formatDate(tender?.priceBidOpeningDate)} />
+          <Info
+            label="Submission Start Date"
+            value={formatDate(tender?.submissionStartDate)}
+          />
+          <Info
+            label="Tender End Date"
+            value={formatDate(tender?.tenderEndDate)}
+          />
+          <Info
+            label="Tender Opening Date"
+            value={formatDate(tender?.tenderOpeningDate)}
+          />
+          <Info
+            label="Pre-Bid Meeting Date"
+            value={formatDate(tender?.preBidMeetingDate)}
+          />
+          <Info
+            label="Price Bid Opening Date"
+            value={formatDate(tender?.priceBidOpeningDate)}
+          />
           <Info label="Work Type" value={tender?.workType} />
-          <Info label="Authority Designation" value={tender?.invitingAuthorityDesignation} />
-          <Info label="Authority Address" value={tender?.invitingAuthorityAddress} />
+          <Info
+            label="Authority Designation"
+            value={tender?.invitingAuthorityDesignation}
+          />
+          <Info
+            label="Authority Address"
+            value={tender?.invitingAuthorityAddress}
+          />
           <Info
             label="Tender Value"
-            value={tender?.totalTenderValue ? `₹ ${tender.totalTenderValue}` : "N/A"}
+            value={
+              tender?.totalTenderValue ? `₹ ${tender.totalTenderValue}` : "N/A"
+            }
           />
           <Info
             label="Created By"
             value={
               tender?.createdBy?.firstName
-                ? `${tender.createdBy.firstName} ${tender.createdBy.lastName || ""}`
+                ? `${tender.createdBy.firstName} ${
+                    tender.createdBy.lastName || ""
+                  }`
                 : "N/A"
             }
           />

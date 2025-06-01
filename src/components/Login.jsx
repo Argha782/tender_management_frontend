@@ -11,7 +11,7 @@ const Login = () => {
   const navigateTo = useNavigate();
 
   const [showPasswords, setShowPasswords] = useState({
-    pw: false
+    pw: false,
   });
 
   const {
@@ -33,7 +33,16 @@ const Login = () => {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         setIsAuthenticated(true);
         setUser(res.data.user);
-        navigateTo("/dashboard");
+        const role = res.data.user.role;
+        if (role === "vendor") {
+          navigateTo("/"); // Homepage
+        } else if (role === "tenderowner") {
+          navigateTo("/dashboard");
+        } else if (role === "superadmin") {
+          navigateTo("/dashboard");
+        } else {
+          navigateTo("/"); // fallback
+        }
       })
       .catch((error) => {
         toast.error(error.response.data.message);

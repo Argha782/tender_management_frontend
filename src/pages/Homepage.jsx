@@ -8,10 +8,13 @@ import { Context } from "../context.jsx";
 
 const Home = () => {
   const [tenders, setTenders] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { user, setUser } = useContext(Context);
+  const isAuthenticated = !!user;
+
   const navigate = useNavigate();
   useEffect(() => {
     const fetchTenders = async () => {
@@ -24,7 +27,22 @@ const Home = () => {
         console.error("Failed to fetch tenders", err);
       }
     };
+
+    const fetchNotifications = async () => {
+      try {
+        const res = await API.get("/notifications");
+        if (res.data.success) {
+          setNotifications(res.data.notifications || []); // ✅ Correct key
+        } else {
+          setNotifications([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch notifications", err);
+      }
+    };
+
     fetchTenders();
+    fetchNotifications();
   }, []);
 
   // Filter tenders based on search input
@@ -45,19 +63,25 @@ const Home = () => {
 
   const columns = [
     {
+      name: "S.No",
+      cell: (row, index) => index + 1,
+      width: "60px",
+      sortable: false,
+    },
+    {
       name: "Tender No",
       selector: (row) => row.tenderNo,
       sortable: true,
       wrap: true,
       width: "180px",
       cell: (row) => (
-    <Link
-      to={`/tenders/${row._id}`}
-      className="text-blue-600 hover:underline"
-    >
-      {row.tenderNo}
-    </Link>
-  ),
+        <Link
+          to={`/tenders/${row._id}`}
+          className="text-blue-600 hover:underline"
+        >
+          {row.tenderNo}
+        </Link>
+      ),
     },
     {
       name: "Tender Details",
@@ -152,7 +176,7 @@ const Home = () => {
           <h1 className="text-xl font-semibold">AEGCL Tender Portal</h1>
         </div>
 
-        {user && user.role === "vendor" ? (
+        {isAuthenticated ? (
           <div className="relative">
             <UserCircle2
               className="w-12 h-12 cursor-pointer text-white"
@@ -192,17 +216,54 @@ const Home = () => {
         )}
       </nav>
 
+      {/* News & Notifications Section */}
+      <div className="relative bg-white border border-yellow-300 shadow-md rounded-md mb-6 overflow-hidden">
+        <div className="flex justify-between items-center bg-yellow-100 px-4 py-2">
+          <h3 className="text-lg font-semibold text-yellow-900">
+            📢 News & Notifications
+          </h3>
+          <button
+            onClick={() => navigate("/notifications")}
+            className="text-sm text-blue-700 font-medium hover:underline"
+          >
+            View All
+          </button>
+        </div>
+
+        {/* Marquee Content */}
+        <div className="relative h-10 overflow-hidden bg-white">
+          <ul className="absolute whitespace-nowrap animate-scroll-left flex gap-12 px-4 text-sm text-gray-800 items-center h-full">
+            {notifications.map((note, index) => (
+              <li key={index} className="whitespace-nowrap">
+                <strong className="text-blue-600">{note.subject}:</strong>{" "}
+                {note.message}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
       {/* Table Section */}
       <div className="max-w-7xl mx-auto p-4">
         <div className="mb-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold">All Tenders</h2>
-          <input
-            type="text"
-            placeholder="Search by Tender No or Details"
-            className="border p-2 rounded w-72"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <div className="flex items-center gap-4">
+            {isAuthenticated && (
+              <button
+                onClick={() => navigate("/favourites")}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
+              >
+                Favourites
+              </button>
+            )}
+            <input
+              type="text"
+              placeholder="Search by Tender No or Details"
+              className="border p-2 rounded w-72"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
         <DataTable
           columns={columns}

@@ -4,8 +4,21 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  // theme: {
+  //   extend: {},
+  // },
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        'scroll-left': {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+      },
+      animation: {
+        'scroll-left': 'scroll-left 25s linear infinite',
+      },
+    },
   },
   plugins: [],
 }

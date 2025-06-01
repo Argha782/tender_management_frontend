@@ -17,6 +17,7 @@ import TenderDetails from "./pages/TenderDetails";
 import Users from "./pages/User.jsx";
 import MyProfile from "./pages/MyProfile.jsx";
 import Notifications from "./pages/Notification";
+import Favourites from "./pages/Favourites";
 
 import Unauthorized from "./components/Unauthorized";
 import Navbar from "./components/Navbar";
@@ -59,6 +60,8 @@ const Layout = ({ children }) => {
     path.startsWith("/otp-verification/") ||
     path === "/register" ||
     path.startsWith("/tenders/");
+    
+    const isNotificationPage = path === "/notifications";
 
   const renderSidebar = () => {
     if (role === "superadmin") return <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />;
@@ -84,46 +87,52 @@ const Layout = ({ children }) => {
 
 const App = () => {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          {/* Public Routes */}
-          {/* <Route path="/" element={<div>Hello World</div>} /> */}
-          <Route path="/" element={<Home/>} />
-          <Route path="/tenders/:_id" element={<TenderDetails />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/otp-verification/:email/:phoneNumber"
-            element={<OtpVerification />}
-          />
-          <Route path="/password/forgot" element={<ForgotPassword />} />
-          <Route path="/password/reset/:token" element={<ResetPassword />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
-          <Route path="*" element={<div>Fallback: Page not found or crashed</div>} />
+    <ContextProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            {/* Public Routes */}
+            {/* <Route path="/" element={<div>Hello World</div>} /> */}
+            <Route path="/" element={<Home/>} />
+            <Route path="/tenders/:_id" element={<TenderDetails />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/otp-verification/:email/:phoneNumber"
+              element={<OtpVerification />}
+            />
+            <Route path="/password/forgot" element={<ForgotPassword />} />
+            <Route path="/password/reset/:token" element={<ResetPassword />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/favourites" element={<Favourites />} />
+            <Route path="*" element={<div>Fallback: Page not found or crashed</div>} />
+            {/* Public Notifications Route (with layout adjusted by role) */}
+            <Route path="/notifications" element={<Notifications />} />
 
 
-          {/* Protected Routes */}
-          <Route element={<PrivateRoute allowedRoles={["superadmin", "tenderowner", "vendor"]} />}>
-            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-            <Route path="/profile" element={<MyProfile />} />
-          </Route>
+            {/* Protected Routes */}
+            <Route element={<PrivateRoute allowedRoles={["superadmin", "tenderowner", "vendor"]} />}>
+              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/profile" element={<MyProfile />} />
+            </Route>
 
-          <Route element={<PrivateRoute allowedRoles={["superadmin"]} />}>
-            <Route path="/tenders" element={<Tenders />} />
-            <Route path="/users" element={<Users />} />
-          </Route>
+            <Route element={<PrivateRoute allowedRoles={["superadmin"]} />}>
+              <Route path="/tenders" element={<Tenders />} />
+              <Route path="/users" element={<Users />} />
+            </Route>
 
-          <Route element={<PrivateRoute allowedRoles={["tenderowner"]} />}>
-            <Route path="/my-tenders" element={<MyTenders/>} />
-          </Route>
+            <Route element={<PrivateRoute allowedRoles={["tenderowner"]} />}>
+              <Route path="/my-tenders" element={<MyTenders/>} />
+            </Route>
 
-          <Route path="/notifications" element={<Notifications />} />
-        </Routes>
-      </Layout>
-      <ToastContainer theme="colored" />
-    </Router>
+            <Route path="/notifications" element={<Notifications />} />
+          </Routes>
+        </Layout>
+        <ToastContainer theme="colored" />
+      </Router>
+    </ContextProvider>
   );
 };
 
