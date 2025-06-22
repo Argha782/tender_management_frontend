@@ -31,27 +31,28 @@ const Tenders = () => {
     remarks: "",
   });
 
-  useEffect(() => {
-    const fetchTenders = async () => {
-      try {
-        setLoading(true);
-        // console.log("Fetching tenders...");
-        const res = await API.get("/tenders");
-        // console.log("Tenders data:", res.data);
-        const tenders = res.data.data; //  Get actual tenders list
+  const fetchTenders = async () => {
+    try {
+      setLoading(true);
+      // console.log("Fetching tenders...");
+      const res = await API.get("/tenders");
+      // console.log("Tenders data:", res.data);
+      const tenders = res.data.data; //  Get actual tenders list
 
-        console.log("Tenders data: ", tenders);
-        if (!Array.isArray(tenders)) {
-          throw new Error("Invalid data format received from API");
-        }
-        setTenders(tenders);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching tenders", err);
-        alert("Failed to load tenders. Please check console for details.");
+      console.log("Tenders data: ", tenders);
+      if (!Array.isArray(tenders)) {
+        throw new Error("Invalid data format received from API");
       }
-    };
+      setTenders(tenders);
+    } catch (err) {
+      console.error("Error fetching tenders", err);
+      alert("Failed to load tenders. Please check console for details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTenders().catch((err) => {
       console.error("Unhandled error in fetchTenders:", err);
     });
@@ -142,7 +143,8 @@ const Tenders = () => {
       }
 
       const res = await API.post("/tenders", formData);
-      setTenders([...tenders, res.data]);
+      // Instead of just updating local state, refetch tenders
+      await fetchTenders();
       setShowForm(false); // Hide the form after adding
       resetForm();
     } catch (err) {

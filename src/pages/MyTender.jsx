@@ -34,34 +34,30 @@ const MyTenders = () => {
     // createdBy: user?.name || "", // set the creator's name from localStorage
   });
 
-  useEffect(() => {
-    const fetchMyTenders = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        // console.log("Fetching tenders...");
-        const res = await API.get("/tenders/my-tenders", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log("Tenders data:", res.data);
-        const tenders = res.data.data; //  Get actual tenders list
-
-        console.log("My Tenders data: ", tenders);
-        if (!Array.isArray(tenders)) {
-          throw new Error("Invalid data format received from API");
-        }
-
-        setTenders(tenders);
-      } catch (err) {
-        console.error("Error fetching my tenders", err);
-        alert("Failed to load your tenders. Check console for details.");
-      } finally {
-        setLoading(false);
+  const fetchMyTenders = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await API.get("/tenders/my-tenders", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const tenders = res.data.data;
+      console.log("Tenders data: ", tenders);
+      if (!Array.isArray(tenders)) {
+        throw new Error("Invalid data format received from API");
       }
-    };
+      setTenders(tenders);
+    } catch (err) {
+      console.error("Error fetching my tenders", err);
+      alert("Failed to load your tenders. Check console for details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchMyTenders().catch((err) => {
       console.error("Unhandled error in fetchMyTenders:", err);
     });
@@ -152,7 +148,8 @@ const MyTenders = () => {
       }
 
       const res = await API.post("/tenders", formData);
-      setTenders([...tenders, res.data]);
+      // Instead of just updating local state, refetch tenders
+      await fetchMyTenders();
       setShowForm(false); // Hide the form after adding
       resetForm();
     } catch (err) {
@@ -207,10 +204,8 @@ const MyTenders = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      //  Update local list using the returned record
-      setTenders((prev) =>
-        prev.map((t) => (t._id === editId ? res.data.data : t))
-      );
+      // Instead of just updating local state, refetch tenders
+      await fetchMyTenders();
 
       //  Reset UI state
       setEditMode(false);

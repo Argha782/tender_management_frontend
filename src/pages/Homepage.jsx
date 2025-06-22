@@ -16,6 +16,12 @@ const Home = () => {
   const isAuthenticated = !!user;
 
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setUser(null);
+    navigate("/login");
+  };
+
   useEffect(() => {
     const fetchTenders = async () => {
       try {
@@ -44,6 +50,7 @@ const Home = () => {
     fetchTenders();
     fetchNotifications();
   }, []);
+
 
   // Filter tenders based on search input
   const filteredTenders = tenders.filter((tender) => {
