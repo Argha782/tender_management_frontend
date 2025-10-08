@@ -1,9 +1,11 @@
 import axios from "axios";
 
+// Dynamically use backend URL from environment variable
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
-  // baseURL: "https://tender-management-backend.onrender.com/api", 
-  // withCredentials: true, // Only needed if using cookies
+  baseURL: import.meta.env.VITE_API_URL 
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : "http://localhost:5000/api",
+  // withCredentials: true, // Uncomment if you use cookies
 });
 
 API.interceptors.request.use((config) => {
@@ -14,13 +16,20 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+// Interceptor for handling responses
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const url = error.config?.url;
+
+    // ⚠️ Prevent session expired alert for login route
+    const isAuthRoute = url?.includes("/auth/login") || url?.includes("/auth/register");
+
+    if (status === 401 && !isAuthRoute) {
+      // Only show session expired for protected routes
       alert("Session expired, please login again.");
       localStorage.removeItem("user");
-      localStorage.removeItem("accessToken");
       localStorage.removeItem("token");
       window.location.href = "/login";
     } else if (!error.response) {
