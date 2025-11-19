@@ -78,20 +78,15 @@ const Register = () => {
           {...register("password")}
           className="w-full mb-3 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
-        {/* <select
+        <select
           name="role"
           className="w-full mb-4 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           defaultValue="vendor"
-          disabled
+          {...register("role")}
         >
           <option value="vendor">Vendor</option>
-        </select> */}
-        <input
-          type="hidden"
-          name="role"
-          value="vendor"
-          {...register("role")}
-         /> 
+          <option value="tenderowner">Tender Owner</option>
+        </select>
         <div className="mb-4">
           <p className="mb-2 font-semibold text-gray-700">Select Verification Method</p>
           <div className="flex space-x-6">
@@ -114,6 +109,7 @@ const Register = () => {
                 {...register("verificationMethod")}
                 required
                 className="form-radio text-indigo-600"
+                disabled
               />
               <span>Phone</span>
             </label>
