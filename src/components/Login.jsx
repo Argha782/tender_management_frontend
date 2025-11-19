@@ -20,34 +20,40 @@ const Login = () => {
     formState: { errors },
   } = useForm();
   const handleLogin = async (data) => {
-    await API.post("http://localhost:5000/api/auth/login", data, {
+  try {
+    const res = await API.post("http://localhost:5000/api/auth/login", data, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
       },
-    })
-      .then((res) => {
-        toast.success(res.data.message);
-        // Save token to localStorage
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        setIsAuthenticated(true);
-        setUser(res.data.user);
-        const role = res.data.user.role;
-        if (role === "vendor") {
-          navigateTo("/"); // Homepage
-        } else if (role === "tenderowner") {
-          navigateTo("/dashboard");
-        } else if (role === "superadmin") {
-          navigateTo("/dashboard");
-        } else {
-          navigateTo("/"); // fallback
-        }
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
-  };
+    });
+
+    toast.success(res.data.message);
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+    setIsAuthenticated(true);
+    setUser(res.data.user);
+
+    const role = res.data.user.role;
+    if (role === "vendor") navigateTo("/");
+    else if (role === "tenderowner" || role === "superadmin") navigateTo("/dashboard");
+    else navigateTo("/");
+
+  } catch (error) {
+    let message = "Login failed";
+
+    if (error.response.data.message) {
+      message = error.response.data.message;
+    } 
+    else if (error.message) {
+      message = error.message; // fallback to native error
+    }
+
+    toast.error(message);
+    console.error("Login Error:", error); // helpful in dev mode
+  }
+};
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-900 to-indigo-700 px-4">
       <form

@@ -230,7 +230,13 @@ const Home = () => {
             📢 News & Notifications
           </h3>
           <button
-            onClick={() => navigate("/notifications")}
+            onClick={() => {
+              if (isAuthenticated) {
+                navigate("/notifications");
+              } else {
+                navigate("/login");
+              }
+            }}
             className="text-sm text-blue-700 font-medium hover:underline"
           >
             View All

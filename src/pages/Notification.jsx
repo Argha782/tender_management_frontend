@@ -193,7 +193,7 @@ const Notifications = () => {
                   </p>
                 </div>
               </div>
-              {canDelete(note) && (
+              {(user.role === "superadmin" || user.role === "tenderowner") && (
                 <button onClick={() => handleDelete(note._id)}>
                   <Trash2 className="text-red-500 hover:text-red-700" />
                 </button>
