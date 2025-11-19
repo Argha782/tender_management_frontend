@@ -179,7 +179,7 @@ const Home = () => {
       {/* Navbar */}
       <nav className="bg-blue-900 text-white shadow p-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <img src="AEGCL_logo.jpg" alt="AEGCL Logo" className="h-10" />
+          <img src="https://res.cloudinary.com/arghasaha/image/upload/v1763540753/AEGCL_logo_qyrfp7.jpg" alt="AEGCL Logo" className="h-10" />
           <h1 className="text-xl font-semibold">AEGCL Tender Portal</h1>
         </div>
 
