@@ -1,6 +1,6 @@
 # ⚡ Tender Management System – Frontend
 
-**Live Website:** [https://tender-management-frontend.vercel.app](https://tender-management-frontend-three.vercel.app)
+**Live Website:** [https://tender-management.vercel.app](https://tender-management-frontend-three.vercel.app)
 **Backend API:** [https://tender-management-backend.onrender.com](https://tender-management-backend.onrender.com)
 
 ---
