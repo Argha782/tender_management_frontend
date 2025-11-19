@@ -41,7 +41,7 @@ const User = () => {
       try {
         setLoading(true);
         // console.log("Fetching users...");
-        const res = await API.get("/users");
+        const res = await API.get("/api/users");
         // console.log("Users data:", res.data);
         const users = res.data.data; //  Get actual Users list
 
@@ -109,7 +109,7 @@ const User = () => {
     if (!isValid) return;
 
     try {
-      const res = await API.post("/users", newUser);
+      const res = await API.post("/api/users", newUser);
       setUsers([...users, res.data.data]);
       setShowForm(false); // Hide the form after adding
       resetForm();
@@ -145,7 +145,7 @@ const User = () => {
     }
 
     try {
-      const res = await API.put(`/users/${editId}`, updatedUser);
+      const res = await API.put(`/api/users/${editId}`, updatedUser);
 
       //  Update local list using the returned record
       setUsers((prev) => prev.map((u) => (u._id === editId ? res.data : u)));
@@ -184,7 +184,7 @@ const User = () => {
   const deleteUser = async (_id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await API.delete(`/users/${_id}`);
+      await API.delete(`/api/users/${_id}`);
       alert("User deleted.");
       setUsers(users.filter((user) => user._id !== _id));
       toast.success("User deleted successfully");
@@ -198,7 +198,7 @@ const User = () => {
   const handleViewUserActivity = async (_id) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await API.get(`/users/activity/${_id}`, {
+      const res = await API.get(`/api/users/activity/${_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSelectedUser(res.data);

@@ -38,7 +38,7 @@ const MyTenders = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await API.get("/tenders/my-tenders", {
+      const res = await API.get("/api/tenders/my-tenders", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -148,7 +148,7 @@ const MyTenders = () => {
       }
 
       // const res = await API.post("http://localhost:5000/tenders", formData);
-      const res = await API.post("/tenders", formData);
+      const res = await API.post("/api/tenders", formData);
       // Instead of just updating local state, refetch tenders
       await fetchMyTenders();
       setShowForm(false); // Hide the form after adding
@@ -201,7 +201,7 @@ const MyTenders = () => {
       formData.append("existingDocuments", JSON.stringify(existingDocuments));
 
       //  Send multipart/form-data to backend
-      const res = await API.put(`/tenders/${editId}`, formData, {
+      const res = await API.put(`/api/tenders/${editId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -241,7 +241,7 @@ const MyTenders = () => {
 
     try {
       // New DELETE request to backend
-      await API.delete(`/tenders/${_id}`);
+      await API.delete(`/api/tenders/${_id}`);
       toast.success("Tender deleted.");
       // Update local state after successful deletion
       setTenders(tenders.filter((tender) => tender._id !== _id));

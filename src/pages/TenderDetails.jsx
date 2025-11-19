@@ -31,7 +31,7 @@ const TenderDetails = () => {
   useEffect(() => {
     const fetchTender = async () => {
       try {
-        const res = await API.get(`/tenders/${_id}`);
+        const res = await API.get(`/api/tenders/${_id}`);
         const tenderData = res.data?.data || res.data;
         if (tenderData) {
           setTender(tenderData);

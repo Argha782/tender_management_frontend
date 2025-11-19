@@ -26,7 +26,7 @@ const Home = () => {
     const fetchTenders = async () => {
       try {
         // const res = await API.get("/");
-        const res = await API.get("/tenders");
+        const res = await API.get("/api/tenders");
         console.log("Fetched tenders:", res.data);
         setTenders(res.data.data); // Make sure this is an array
       } catch (err) {
@@ -36,7 +36,7 @@ const Home = () => {
 
     const fetchNotifications = async () => {
       try {
-        const res = await API.get("/notifications");
+        const res = await API.get("/api/notifications");
         if (res.data.success) {
           setNotifications(res.data.notifications || []); // ✅ Correct key
         } else {

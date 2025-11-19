@@ -24,7 +24,7 @@ const MyProfile = () => {
     const fetchProfile = async () => {
       try {
         console.log("Token used for API call:", token);
-        const response = await API.get("/users/me", {
+        const response = await API.get("/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log("API response data:", response.data);
@@ -52,7 +52,7 @@ const MyProfile = () => {
   const handleSave = async () => {
     try {
       await API.put(
-        "/users/me",
+        "/api/users/me",
         {
           firstName: user.firstName,
           lastName: user.lastName,

@@ -35,7 +35,7 @@ const Notifications = () => {
 
   const fetchNotifications = async () => {
     try {
-      const { data } = await API.get("/notifications");
+      const { data } = await API.get("/api/notifications");
       console.log("Fetched notifications:", data);
       const notes = data.notifications || data; // fallback
       setNotifications(notes);
@@ -50,7 +50,7 @@ const Notifications = () => {
       return;
     }
     try {
-      await API.post("/notifications", formData);
+      await API.post("/api/notifications", formData);
       toast.success("Notification created!");
       setShowForm(false);
       setFormData({ subject: "", message: "", type: "TENDER_UPDATE" });
@@ -62,7 +62,7 @@ const Notifications = () => {
 
   const handleDelete = async (id) => {
     try {
-      await API.delete(`/notifications/${id}`);
+      await API.delete(`/api/notifications/${id}`);
       toast.success("Deleted");
       fetchNotifications();
     } catch {

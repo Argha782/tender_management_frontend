@@ -12,7 +12,7 @@ const Favourite = () => {
 
       for (const id of favouriteIds) {
         try {
-          const res = await API.get(`/tenders/${id}`);
+          const res = await API.get(`/api/tenders/${id}`);
           fetched.push(res.data?.data || res.data);
         } catch (err) {
           console.error(`Failed to fetch tender ${id}`);

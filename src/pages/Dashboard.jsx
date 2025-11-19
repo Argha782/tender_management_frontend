@@ -35,7 +35,7 @@ const Dashboard = () => {
     const fetchTenders = async () => {
       try {
         setLoading(true);
-        const response = await API.get("/tenders");
+        const response = await API.get("/api/tenders");
         const data = response.data.data;
 
         const total = data.length;

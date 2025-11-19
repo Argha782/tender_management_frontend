@@ -35,7 +35,7 @@ const Tenders = () => {
     try {
       setLoading(true);
       // console.log("Fetching tenders...");
-      const res = await API.get("/tenders");
+      const res = await API.get("/api/tenders");
       // console.log("Tenders data:", res.data);
       const tenders = res.data.data; //  Get actual tenders list
 
@@ -142,7 +142,7 @@ const Tenders = () => {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
 
-      const res = await API.post("/tenders", formData);
+      const res = await API.post("/api/tenders", formData);
       // Instead of just updating local state, refetch tenders
       await fetchTenders();
       setShowForm(false); // Hide the form after adding
@@ -195,7 +195,7 @@ const Tenders = () => {
       formData.append("existingDocuments", JSON.stringify(existingDocuments));
 
       //  Send multipart/form-data to backend
-      const res = await API.put(`/tenders/${editId}`, formData, {
+      const res = await API.put(`/api/tenders/${editId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -237,7 +237,7 @@ const Tenders = () => {
 
     try {
       // New DELETE request to backend
-      await API.delete(`/tenders/${_id}`);
+      await API.delete(`/api/tenders/${_id}`);
       alert("Tender deleted.");
       // Update local state after successful deletion
       setTenders(tenders.filter((tender) => tender._id !== _id));
