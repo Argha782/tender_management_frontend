@@ -36,7 +36,8 @@ const OtpVerification = () => {
       phoneNumber,
     };
     await API
-      .post("http://localhost:5000/api/auth/otp-verification", data, {
+      // .post("http://localhost:5000/api/auth/otp-verification", data, {
+      .post("/api/auth/otp-verification", data, {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       })

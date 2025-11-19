@@ -147,6 +147,7 @@ const MyTenders = () => {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
 
+      // const res = await API.post("http://localhost:5000/tenders", formData);
       const res = await API.post("/tenders", formData);
       // Instead of just updating local state, refetch tenders
       await fetchMyTenders();

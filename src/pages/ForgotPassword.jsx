@@ -11,7 +11,8 @@ const ForgotPassword = () => {
     e.preventDefault();
     await API
       .post(
-        "http://localhost:5000/api/auth/password/forgot",
+        // "http://localhost:5000/api/auth/password/forgot",
+        "/api/auth/password/forgot",
         { email },
         {
           withCredentials: true,

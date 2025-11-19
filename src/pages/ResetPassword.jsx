@@ -18,7 +18,8 @@ const ResetPassword = () => {
     }
     await API
       .put(
-        `http://localhost:5000/api/auth/password/reset/${token}`,
+        // `http://localhost:5000/api/auth/password/reset/${token}`,
+        `/api/auth/password/reset/${token}`,
         { password, confirmPassword },
         {
           withCredentials: true,

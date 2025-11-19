@@ -17,7 +17,7 @@ const Register = () => {
   const handleRegister = async (data) => {
     data.phoneNumber = `+91${data.phoneNumber}`;
     await API
-      .post("http://localhost:5000/api/auth/register", data, {
+      .post("/api/auth/register", data, {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       })
